@@ -20,14 +20,14 @@ import math
 from scipy import interpolate
 import matplotlib.lines as lines
 from tkinter import filedialog
-from scipy.spatial.qhull import QhullError
+from scipy.spatial import QhullError
 
-opponent = 'SAM_BEA'
+opponent = 'KAM_NOR'
 
 def get_csv():
     global opponent
     #csv_file = 'CSVs//OregonHitters.csv'
-    csv_file = filedialog.askopenfilename()
+    csv_file = 'Kamploops.csv'
     csv_df = pd.read_csv(csv_file)
     csv_df = csv_df.drop(csv_df[csv_df.BatterTeam != opponent].index)
     return csv_df
@@ -212,7 +212,8 @@ def ev_calculations(player_df, lhp_df, rhp_df):
 
 def presentation(name, prs, ev_stats, i):
 
-    slide = prs.slides.get(256+i)
+    first_slide_id = prs.slides[0].slide_id
+    slide = prs.slides.get(first_slide_id)
     name1 = name.split()
     full_name = name1[-1] + ' ' + name1[0]
     full_name = full_name[:-1]
@@ -315,7 +316,7 @@ def main():
     prs = make_presentation()
     names = csv["Batter"].unique()
     for i in range(1):
-        player_df = to_player_df(names[i])
+        player_df = to_player_df(csv,names[i])
         rhp_df = player_df_to_side_df(player_df,'Right')
         lhp_df = player_df_to_side_df(player_df,'Left')
         ev_stats = ev_calculations(player_df,lhp_df,rhp_df)
@@ -325,7 +326,7 @@ def main():
         damage_chart(rhp_df_dc,names[i],'Right')
         prs = presentation(names[i],prs,ev_stats,i)
         
-
+main()
 
 
 
