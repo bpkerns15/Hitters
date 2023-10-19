@@ -25,13 +25,13 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-opponent = 'SPR_DRI'
+opponent = 'VIC_HAR'
 
 def get_csv():
     global opponent
     #csv_file = 'CSVs//OregonHitters.csv'
-    csv_file = 'drifters2.csv'
-    #csv_file =  filedialog.askopenfilename()
+    #csv_file = 'drifters2.csv'
+    csv_file =  filedialog.askopenfilename()
     csv_df = pd.read_csv(csv_file)
     csv_df = csv_df.drop(csv_df[csv_df.BatterTeam != opponent].index)
     return csv_df
@@ -208,6 +208,8 @@ def stat_calcs(player_df,type):
     out_of_zone_df = player_df
     indexzone  = out_of_zone_df[ (out_of_zone_df['PlateLocSide'] < 0.83083) & (out_of_zone_df['PlateLocSide'] > -0.83083) & (out_of_zone_df['PlateLocHeight'] < 3.67333) & (out_of_zone_df['PlateLocHeight'] > 1.52417)].index
     out_of_zone_df = out_of_zone_df.drop(indexzone)
+    out_of_zone_df.dropna(subset=['PlateLocSide', 'PlateLocHeight'], inplace=True)
+    out_of_zone_df.to_csv('test.csv')
     chases = (out_of_zone_df["PitchCall"] == "InPlay").sum() + (out_of_zone_df["PitchCall"] == "FoulBall").sum() + (out_of_zone_df["PitchCall"] == "StrikeSwinging").sum()
     takes_out_of_zone =  (out_of_zone_df["PitchCall"] == "BallCalled").sum() + (out_of_zone_df["PitchCall"] == "StrikeCalled").sum() + (out_of_zone_df["PitchCall"] == "HitByPitch").sum() + (out_of_zone_df["PitchCall"] == "BallinDirt").sum()
     chase_rate = "%.0f" % round(100*(chases/(chases+takes_out_of_zone)),0)
@@ -220,6 +222,8 @@ def stat_calcs(player_df,type):
 
     walks = (walk_df["KorBB"] == "Walk").sum()
     bb_over_ks = "%.2f" % round(((walks)/strikeouts),2)
+    if strikeouts == 0:
+        bb_over_ks = str(walks) + '/0'
 
     #AVG
     ABs = (player_df["PitchCall"] == "InPlay").sum() - (player_df["PlayResult"] == "Sacrifice").sum() + (player_df["KorBB"] == "Strikeout").sum()
@@ -295,7 +299,7 @@ def ground_out_fly_out(df):
     return ratio
 
 def up_in_zone_avg(df):
-    upzone = df[(df['PlateLocSide'] < 0.83083) & (df['PlateLocSide'] > -0.83083) & (df['PlateLocHeight'] < 3.67333) & (df['PlateLocHeight'] > 2.95694)]
+    upzone = df[(df['PlateLocSide'] < 0.86383) & (df['PlateLocSide'] > -0.86383) & (df['PlateLocHeight'] < 4.00333) & (df['PlateLocHeight'] > 2.62694)]
     #AVG
     ABs = (upzone["PitchCall"] == "InPlay").sum() - (upzone["PlayResult"] == "Sacrifice").sum() + (upzone["KorBB"] == "Strikeout").sum()
     hits = (upzone["PlayResult"] == "Single").sum() + (upzone["PlayResult"] == "Double").sum() + (upzone["PlayResult"] == "Triple").sum() + (upzone["PlayResult"] == "HomeRun").sum()
@@ -304,7 +308,7 @@ def up_in_zone_avg(df):
     return str(avg)
 
 def down_in_zone_avg(df):
-    down_zone = df[(df['PlateLocSide'] < 0.83083) & (df['PlateLocSide'] > -0.83083) & (df['PlateLocHeight'] < 2.24056) & (df['PlateLocHeight'] > 1.52417)]
+    down_zone = df[(df['PlateLocSide'] < 0.86383) & (df['PlateLocSide'] > -0.86383) & (df['PlateLocHeight'] < 2.57056) & (df['PlateLocHeight'] > 1.19417)]
     #AVG
     ABs = (down_zone["PitchCall"] == "InPlay").sum() - (down_zone["PlayResult"] == "Sacrifice").sum() + (down_zone["KorBB"] == "Strikeout").sum()
     hits = (down_zone["PlayResult"] == "Single").sum() + (down_zone["PlayResult"] == "Double").sum() + (down_zone["PlayResult"] == "Triple").sum() + (down_zone["PlayResult"] == "HomeRun").sum()
@@ -362,7 +366,7 @@ def presentation(name, prs, ev_stats,rhp_stats,lhp_stats,rhp_fb_stats,lhp_fb_sta
         cell = table.cell(0, i)
         cell.text = text_labels[i]
         cell.text_frame.paragraphs[0].font.size = Pt(14)
-        if i == 3 or 4:
+        if i == 3 or i == 4:
             cell.text_frame.paragraphs[0].font.size = Pt(12.5)
         cell.text_frame.paragraphs[0].font.bold = False
         cell.text_frame.paragraphs[0].font.name = 'Adobe Heiti Std R'
@@ -372,21 +376,27 @@ def presentation(name, prs, ev_stats,rhp_stats,lhp_stats,rhp_fb_stats,lhp_fb_sta
         cell.fill.fore_color.rgb = RGBColor(152, 1, 46)
         cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(255, 248, 221)
         if i == 0:
-            cell.fill.fore_color.rgb = RGBColor(255, 248, 221)
-            cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(94, 94, 94)
+            cell.text_frame.paragraphs[1].font.color.rgb = RGBColor(255, 248, 221)
+            cell.text_frame.paragraphs[1].font.name = 'Adobe Heiti Std R'
+            cell.text_frame.paragraphs[1].font.size = Pt(10)
 
     pitch_labels = ['FB\n' + '(' + lhp_fb_stats[0] + ')','BB\n' + '(' + lhp_bb_stats[0] + ')', 'CH\n' + '(' + lhp_ch_stats[0] + ')']
     for i in range(3):
         cell = table.cell(i+1, 0)
         cell.text = pitch_labels[i]
-        cell.text_frame.paragraphs[0].font.size = Pt(10)
+        cell.text_frame.paragraphs[0].font.size = Pt(14)
         cell.text_frame.paragraphs[0].font.bold = False
         cell.text_frame.paragraphs[0].font.name = 'Adobe Heiti Std R'
         cell.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+        cell.text_frame.paragraphs[1].font.size = Pt(9)
+        cell.text_frame.paragraphs[1].font.bold = False
+        cell.text_frame.paragraphs[1].font.name = 'Adobe Heiti Std R'
+        cell.text_frame.paragraphs[1].alignment = PP_ALIGN.CENTER
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
         cell.fill.solid()
-        cell.fill.fore_color.rgb = RGBColor(255, 248, 221)
-        cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(94, 94, 94)
+        cell.fill.fore_color.rgb = RGBColor(152, 1, 46)
+        cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(255, 248, 221)
+        cell.text_frame.paragraphs[1].font.color.rgb = RGBColor(255, 248, 221)
     
     cell = table.cell(4, 0)
     cell.text = 'LHP Overall'
@@ -397,7 +407,7 @@ def presentation(name, prs, ev_stats,rhp_stats,lhp_stats,rhp_fb_stats,lhp_fb_sta
     cell.vertical_anchor = MSO_ANCHOR.MIDDLE
     cell.fill.solid()
     cell.fill.fore_color.rgb = RGBColor(0, 0, 0)
-    cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(94, 94, 94)
+    cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(255, 248, 221)
 
     lhp_pitch_values = [lhp_fb_stats,lhp_bb_stats,lhp_ch_stats]
     for i in range(3):
@@ -439,7 +449,7 @@ def presentation(name, prs, ev_stats,rhp_stats,lhp_stats,rhp_fb_stats,lhp_fb_sta
         cell = table.cell(0, i)
         cell.text = text_labels[i]
         cell.text_frame.paragraphs[0].font.size = Pt(14)
-        if i == 3 or 4:
+        if i == 3 or i == 4:
             cell.text_frame.paragraphs[0].font.size = Pt(12.5)
         cell.text_frame.paragraphs[0].font.bold = False
         cell.text_frame.paragraphs[0].font.name = 'Adobe Heiti Std R'
@@ -449,21 +459,27 @@ def presentation(name, prs, ev_stats,rhp_stats,lhp_stats,rhp_fb_stats,lhp_fb_sta
         cell.fill.fore_color.rgb = RGBColor(152, 1, 46)
         cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(255, 248, 221)
         if i == 0:
-            cell.fill.fore_color.rgb = RGBColor(255, 248, 221)
-            cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(94, 94, 94)
+            cell.text_frame.paragraphs[1].font.color.rgb = RGBColor(255, 248, 221)
+            cell.text_frame.paragraphs[1].font.name = 'Adobe Heiti Std R'
+            cell.text_frame.paragraphs[1].font.size = Pt(10)
 
     pitch_labels = ['FB\n' + '(' + rhp_fb_stats[0] + ')','BB\n' + '(' + rhp_bb_stats[0] + ')', 'CH\n' + '(' + rhp_ch_stats[0] + ')']
     for i in range(3):
         cell = table.cell(i+1, 0)
         cell.text = pitch_labels[i]
-        cell.text_frame.paragraphs[0].font.size = Pt(10)
+        cell.text_frame.paragraphs[0].font.size = Pt(14)
         cell.text_frame.paragraphs[0].font.bold = False
         cell.text_frame.paragraphs[0].font.name = 'Adobe Heiti Std R'
         cell.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+        cell.text_frame.paragraphs[1].font.size = Pt(9)
+        cell.text_frame.paragraphs[1].font.bold = False
+        cell.text_frame.paragraphs[1].font.name = 'Adobe Heiti Std R'
+        cell.text_frame.paragraphs[1].alignment = PP_ALIGN.CENTER
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
         cell.fill.solid()
-        cell.fill.fore_color.rgb = RGBColor(255, 248, 221)
-        cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(94, 94, 94)
+        cell.fill.fore_color.rgb = RGBColor(152, 1, 46)
+        cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(255, 248, 221)
+        cell.text_frame.paragraphs[1].font.color.rgb = RGBColor(255, 248, 221)
     
     cell = table.cell(4, 0)
     cell.text = 'RHP Overall'
@@ -474,7 +490,7 @@ def presentation(name, prs, ev_stats,rhp_stats,lhp_stats,rhp_fb_stats,lhp_fb_sta
     cell.vertical_anchor = MSO_ANCHOR.MIDDLE
     cell.fill.solid()
     cell.fill.fore_color.rgb = RGBColor(0, 0, 0)
-    cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(94, 94, 94)
+    cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(255, 248, 221)
 
     rhp_pitch_values = [rhp_fb_stats,rhp_bb_stats,rhp_ch_stats]
     for i in range(3):
