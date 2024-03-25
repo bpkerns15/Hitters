@@ -3,12 +3,13 @@ The Knights Hutters Sheets creates a PowerPoint file containing a scouting slide
 
 ![alt text](https://github.com/cheath5155/KnightsHittersSheets/blob/main/Example.jpg)
 
-1) An advanced stats line containing batted ball information and advanced stats including average exit velocity (EV), max EV, chase rate, and more.
-2) A traditional stats line containing all traditional batting stats.
-3) A 2D density plot showing the zone location of all the pitches a batter has swung at.
-4) An exit velocity heat map showing hitters' average exit velocity by zone location.
-5) An overhead heat map showing exit velocity by location from an overhead view of home plate.
-6) A scatter plot showing all pitch locations and pitch result based on the color of the dot.
+The Main Components of the Sheet
+1) A breakdown of stats by pitch type and batter side.
+2) Hitter splits for RHP and LHP on a variety of stats.
+3) An exit velocity heat map showing hitters' average exit velocity by zone location split up vs RHP and LHP.
+4) An overhead heat map showing exit velocity by location from an overhead view of home plate.
+5) Hitter batter average in the top and bottom part of the zone split by RHP and LHP (must be manually input from numbers printed in the program terminal)
+Note: Stolen base numbers and OPS in the last 10 games must be inputted manually.
 
 
 ## Installation
@@ -20,7 +21,7 @@ The Knights Hutters Sheets creates a PowerPoint file containing a scouting slide
 Open KnightsHittersSheets.py and change the opponent name to the Trackman abbreviation.
 Run the program and select the CSV.
 The CSV must be a Trackman V3 formatted CSV or a combined group of Trackman V3 CSVs.
-The final file will show up in the sheets folder.
+The final file will show up in the sheets folder and will contain one slide for every Batter on the opposing team.
 
 ## Credits
 - Author: Connor Heath
