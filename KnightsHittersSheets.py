@@ -29,7 +29,6 @@ opponent = 'VIC_HAR'
 
 def get_csv():
     global opponent
-    #csv_file = 'CSVs//OregonHitters.csv'
     #csv_file = 'drifters2.csv'
     csv_file =  filedialog.askopenfilename()
     csv_df = pd.read_csv(csv_file)
