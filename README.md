@@ -1,5 +1,5 @@
 # Knights Hitters Sheets
-The Knights Hutters Sheets creates a PowerPoint file containing a scouting slide for a list of hitters from a Trackman V3 CSV. The report looks like below and contains the following:
+The Knights Hitters Sheets creates a PowerPoint file containing a scouting slide for a list of hitters from a Trackman V3 CSV. The report looks like below and contains the following:
 
 ![alt text](https://github.com/cheath5155/KnightsHittersSheets/blob/main/Example.jpg)
 
